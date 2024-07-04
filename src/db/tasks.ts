@@ -6,7 +6,8 @@ const TaskSchema = new mongoose.Schema({
     type: { type: String, required: true },
     created_on: { type: String, required: true },
     status: { type: String, required: true }
-});
+}
+);
 
 export const TaskModel = mongoose.model('Task', TaskSchema);
 
