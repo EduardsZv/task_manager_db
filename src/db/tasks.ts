@@ -5,7 +5,8 @@ const TaskSchema = new mongoose.Schema({
     description: { type: String, required: true },
     type: { type: String, required: true },
     created_on: { type: String, required: true },
-    status: { type: String, required: true }
+    status: { type: String, required: true },
+    assigned_to: { type: String, default: "UNASSIGNED" }
 }
 );
 
