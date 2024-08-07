@@ -57,8 +57,9 @@ export const deleteTask = async(req: express.Request, res: express.Response) => 
         const {id} = req.params;
         
         const deletedTask = await deleteTaskById(id);
+        const tasks = await getTasks();
 
-        return res.json(deletedTask);
+        return res.json(tasks);
     } catch(error) {
         console.log(error);
         return res.sendStatus(400);
