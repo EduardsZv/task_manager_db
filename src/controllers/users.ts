@@ -4,9 +4,9 @@ import { authentication, random } from '../helpers';
 
 export const register = async (req: express.Request, res: express.Response) => {
     try {
-        const { first_name, last_name, password, username } = req.body;
+        const { first_name, last_name, role, password, username } = req.body;
 
-        if (!username || !password || !first_name || !last_name) {
+        if (!username || !password || !role || !first_name || !last_name) {
             return res.sendStatus(400);
         }
 
@@ -16,11 +16,16 @@ export const register = async (req: express.Request, res: express.Response) => {
             return res.sendStatus(400);
         }
 
+        if (role != "Admin" && role != "Manager" && role != "User") {
+            return res.sendStatus(401);
+        }
+
         const salt = random();
         const user = await createUser({
             username,
             first_name,
             last_name,
+            role,
             authentication: {
                 salt,
                 password: authentication(salt, password),
@@ -91,7 +96,7 @@ export const deleteUser = async (req: express.Request, res: express.Response) =>
 
         const deletedUser = await deleteUserById(id);
 
-        return res.json(deleteUser);
+        return res.json(deletedUser);
 
     } catch (error) {
         console.log(error);
@@ -99,18 +104,29 @@ export const deleteUser = async (req: express.Request, res: express.Response) =>
     }
 }
 
-export const updateUser = async (req: express.Request, res: express.Response) => {
+export const updateUserInfo = async (req: express.Request, res: express.Response) => {
     try {
 
         const {id} = req.params;
-        const {username} = req.body;
+        const {username, first_name, last_name} = req.body;
 
-        if (!username) {
+        if (!username || !first_name || !last_name) {
             return res.sendStatus(400);
+        }
+
+        const existingUser = await getUserByUsername(username);
+
+        if (existingUser) {
+            return res.sendStatus(403);
         }
 
         const user = await getUserById(id);
         user.username = username;
+        user.first_name = first_name;
+        user.last_name = last_name;
+
+        
+
         await user.save();
 
         return res.status(200).json(user).end();
@@ -121,6 +137,32 @@ export const updateUser = async (req: express.Request, res: express.Response) =>
         return res.sendStatus(400);
     }
 };
+
+export const updateUserRole = async (req: express.Request, res: express.Response) => {
+    try {
+        const {id} = req.params;
+        const {role} = req.body;
+
+        if (!role) {
+            return res.sendStatus(400);
+        }
+
+        if (role != "Admin" && role != "Manager" && role != "User") {
+            return res.sendStatus(401);
+        }
+
+        const user = await getUserById(id);
+        user.role = role;
+
+        user.save();
+
+        return res.status(200).json(user).end();
+
+
+    } catch (error) {
+
+    }
+}
 
 export const getUserfromId = async (req: express.Request, res: express.Response) => {
     try {
@@ -140,3 +182,4 @@ export const getUserfromId = async (req: express.Request, res: express.Response)
         return res.sendStatus(400);
     }
 }
+

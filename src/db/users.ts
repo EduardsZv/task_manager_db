@@ -4,6 +4,12 @@ const UserSchema = new mongoose.Schema({
     username: { type: String, required: true },
     first_name: { type: String, required: true },
     last_name: { type: String, required: true },
+    role: {
+        type: String,
+        enum: ['User', 'Manager', 'Admin'],
+        default: 'User',
+        required: true
+    },
     authentication: {
         password: { type: String, required: true, select: false },
         salt: { type: String, select: false },
