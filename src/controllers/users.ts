@@ -16,9 +16,6 @@ export const register = async (req: express.Request, res: express.Response) => {
             return res.sendStatus(400);
         }
 
-        if (role != "Admin" && role != "Manager" && role != "User") {
-            return res.sendStatus(401);
-        }
 
         const salt = random();
         const user = await createUser({
@@ -37,7 +34,7 @@ export const register = async (req: express.Request, res: express.Response) => {
 
     } catch (error) {
         console.log(error);
-        return res.sendStatus(400);
+        return res.sendStatus(500);
     }
 };
 
@@ -72,7 +69,7 @@ export const login = async (req: express.Request, res: express.Response) => {
 
     } catch (error) {   
         console.log(error);
-        return res.sendStatus(400);
+        return res.sendStatus(500);
     }
 };
 
@@ -85,7 +82,7 @@ export const getAllUsers = async (req: express.Request, res: express.Response) =
 
     } catch (error) {
         console.log(error);
-        return res.sendStatus(400);
+        return res.sendStatus(500);
     }
 }
 
@@ -100,7 +97,7 @@ export const deleteUser = async (req: express.Request, res: express.Response) =>
 
     } catch (error) {
         console.log(error);
-        return res.sendStatus(400);
+        return res.sendStatus(500);
     }
 }
 
@@ -117,7 +114,7 @@ export const updateUserInfo = async (req: express.Request, res: express.Response
         const existingUser = await getUserByUsername(username);
 
         if (existingUser) {
-            return res.sendStatus(403);
+            return res.sendStatus(400);
         }
 
         const user = await getUserById(id);
@@ -134,7 +131,7 @@ export const updateUserInfo = async (req: express.Request, res: express.Response
 
     } catch (error) {
         console.log(error);
-        return res.sendStatus(400);
+        return res.sendStatus(500);
     }
 };
 
@@ -145,10 +142,6 @@ export const updateUserRole = async (req: express.Request, res: express.Response
 
         if (!role) {
             return res.sendStatus(400);
-        }
-
-        if (role != "Admin" && role != "Manager" && role != "User") {
-            return res.sendStatus(401);
         }
 
         const user = await getUserById(id);
@@ -172,14 +165,14 @@ export const getUserfromId = async (req: express.Request, res: express.Response)
         const user = await getUserById(id);
 
         if (!user) {
-            return res.sendStatus(400);
+            return res.sendStatus(404);
         }
 
         return res.status(200).json(user).end();
 
     } catch (error) {
         console.log(error);
-        return res.sendStatus(400);
+        return res.sendStatus(500);
     }
 }
 
