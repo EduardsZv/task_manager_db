@@ -4,13 +4,12 @@ import { authentication, random } from '../helpers';
 
 export const register = async (req: express.Request, res: express.Response) => {
     try {
-        const { first_name, last_name, role, password, username } = req.body;
+        const { first_name, last_name, password, username } = req.body;
 
         if (!username || !password || !first_name || !last_name) {
             return res.sendStatus(400);
         }
 
-        const userRoles = role && role.length > 0 ? role : ['User'];
 
         const existingUser = await getUserByUsername(username);
 
@@ -24,7 +23,6 @@ export const register = async (req: express.Request, res: express.Response) => {
             username,
             first_name,
             last_name,
-            userRoles,
             authentication: {
                 salt,
                 password: authentication(salt, password),
@@ -140,14 +138,14 @@ export const updateUserInfo = async (req: express.Request, res: express.Response
 export const updateUserRole = async (req: express.Request, res: express.Response) => {
     try {
         const {id} = req.params;
-        const {role} = req.body;
+        const {roles} = req.body;
 
-        if (!role) {
+        if (!roles) {
             return res.sendStatus(400);
         }
 
         const user = await getUserById(id);
-        user.role = role;
+        user.roles = roles;
 
         user.save();
 
