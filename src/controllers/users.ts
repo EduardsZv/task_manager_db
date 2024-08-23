@@ -6,9 +6,11 @@ export const register = async (req: express.Request, res: express.Response) => {
     try {
         const { first_name, last_name, role, password, username } = req.body;
 
-        if (!username || !password || !role || !first_name || !last_name) {
+        if (!username || !password || !first_name || !last_name) {
             return res.sendStatus(400);
         }
+
+        const userRoles = role && role.length > 0 ? role : ['User'];
 
         const existingUser = await getUserByUsername(username);
 
@@ -22,7 +24,7 @@ export const register = async (req: express.Request, res: express.Response) => {
             username,
             first_name,
             last_name,
-            role,
+            userRoles,
             authentication: {
                 salt,
                 password: authentication(salt, password),
